@@ -1,0 +1,23 @@
+# Environment Variables Template
+# Copy this file to .env to get started: cp .envTemplate .env
+# Default values work for local development. Change LOCAL_STORAGE_KEY before deploying to production.
+
+# Local Storage Encryption Key
+# Used to encrypt data stored in the browser's localStorage
+LOCAL_STORAGE_KEY=local-dev-storage-key
+
+# Connectly backend-v2 API base URL
+# The frontend talks to this REST API for auth, posts, profiles, search, etc.
+VITE_API_URL=http://localhost:8082
+
+# Node Environment
+# Options: development, production
+NODE_ENV=development
+
+# Server Port (optional, defaults to 3000)
+# PORT=3000
+
+# Client feature flags (optional)
+# Comma-separated key=value list consumed by the runtime feature-flag hook.
+# Example: VITE_FEATURE_FLAGS="newNav=true,newCheckout=false"
+# VITE_FEATURE_FLAGS=

@@ -1,0 +1,50 @@
+import { DEFAULT_PORT, BASE } from './config/constants';
+import express from 'express';
+import ViteExpress from 'vite-express';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import { applySecurityHeaders } from './middleware/security-headers';
+import { globalErrorHandler } from './middleware/error-handler';
+import apiRoutes from './routes/api';
+import pageRoutes from './routes/pages';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const setupMiddleware = (app: express.Application) => {
+  // Security headers must come first so every response — including errors,
+  // redirects, and static assets — carries the full security header set.
+  applySecurityHeaders(app);
+
+  app.set('trust proxy', 1);
+  app.use(express.static(`${__dirname}/public`));
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
+};
+
+const setupRoutes = (app: express.Application) => {
+  app.use(apiRoutes);
+  app.use(pageRoutes);
+  app.use(globalErrorHandler);
+};
+
+const startServer = () => {
+  const app = express();
+
+  setupMiddleware(app);
+  setupRoutes(app);
+
+  const port = parseInt(process.env.PORT ?? DEFAULT_PORT, BASE);
+  const displayPort = new Intl.NumberFormat('en-US', {
+    useGrouping: false,
+  }).format(port);
+
+  ViteExpress.listen(app, port, () => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `${process.env.NODE_ENV ?? ''} Server is listening on ${displayPort}.`
+    );
+  });
+};
+
+startServer();
