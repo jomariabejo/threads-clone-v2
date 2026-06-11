@@ -2,6 +2,7 @@ import { useId, useState, type SubmitEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import {
   Alert,
   Box,
@@ -120,7 +121,10 @@ const Login = () => {
                   <Alert.Root status="error" borderRadius="lg">
                     <Alert.Indicator />
                     <Alert.Title>
-                      <FormattedMessage id="auth.login.error" />
+                      <FormattedMessage id={axios.isAxiosError(mutation.error) && mutation.error.response?.status === 403
+                        ? 'auth.login.suspended'
+                        : 'auth.login.error'}
+                      />
                     </Alert.Title>
                   </Alert.Root>
                 )}

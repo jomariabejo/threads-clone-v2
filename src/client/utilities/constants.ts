@@ -30,6 +30,10 @@ export const ROUTES = {
   PROFILE_EDIT: '/profile/edit',
   PROFILE_USER: '/profile/:userId',
   POST_DETAIL: '/feed/:id',
+  ADMIN: '/admin',
+  ADMIN_USERS: '/admin/users',
+  ADMIN_POSTS: '/admin/posts',
+  ADMIN_REPORTS: '/admin/reports',
 } as const;
 
 export const API_PATHS = {

@@ -1,15 +1,14 @@
 import { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Box, HStack, Heading, IconButton, Text, VStack } from '@chakra-ui/react';
 import { useTheme } from 'next-themes';
-import { LuChevronsLeft, LuChevronsRight, LuHeart, LuHouse, LuLogOut, LuMenu, LuSearch, LuShieldCheck, LuSquarePen, LuUser, LuX } from 'react-icons/lu';
+import { LuArrowLeft, LuChevronsLeft, LuChevronsRight, LuFileText, LuFlag, LuLayoutDashboard, LuLogOut, LuMenu, LuUsers, LuX } from 'react-icons/lu';
 import type { IconType } from 'react-icons';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ROUTES } from '@/client/utilities/constants';
 import { logout } from '@/client/redux/auth';
-import { type AppDispatch, type RootState } from '@/client/redux/store';
-import { useNotificationSocket } from '@/client/hooks/use-notification-socket';
+import { type AppDispatch } from '@/client/redux/store';
 import { Link } from '../components/link';
 import { ColorModeToggle } from '../components/color-mode-toggle';
 import { LanguageSwitcher } from '../components/language-switcher';
@@ -21,11 +20,10 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { icon: LuHouse, labelId: 'nav.feed', to: ROUTES.FEED },
-  { icon: LuSearch, labelId: 'nav.search', to: ROUTES.SEARCH },
-  { icon: LuSquarePen, labelId: 'nav.create', to: ROUTES.CREATE },
-  { icon: LuHeart, labelId: 'nav.activity', to: ROUTES.ACTIVITY },
-  { icon: LuUser, labelId: 'nav.profile', to: ROUTES.PROFILE },
+  { icon: LuLayoutDashboard, labelId: 'admin.nav.dashboard', to: ROUTES.ADMIN },
+  { icon: LuUsers, labelId: 'admin.nav.users', to: ROUTES.ADMIN_USERS },
+  { icon: LuFileText, labelId: 'admin.nav.posts', to: ROUTES.ADMIN_POSTS },
+  { icon: LuFlag, labelId: 'admin.nav.reports', to: ROUTES.ADMIN_REPORTS },
 ];
 
 const SIDEBAR_WIDTH = '280px';
@@ -35,7 +33,7 @@ const MOBILE_NAV_HEIGHT = '64px';
 
 const isNavItemActive = (pathname: string, to: string) => pathname === to || pathname.startsWith(`${to}/`);
 
-export const AppLayout = () => {
+export const AdminLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,19 +42,11 @@ export const AppLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [prevPathname, setPrevPathname] = useState(location.pathname);
-  const unreadCount = useSelector((state: RootState) => state.notifications.unreadCount);
-  const role = useSelector((state: RootState) => state.auth.user?.role);
-
-  useNotificationSocket();
 
   if (location.pathname !== prevPathname) {
     setPrevPathname(location.pathname);
     setMobileOpen(false);
   }
-
-  const navItems: NavItem[] = role === 'ADMIN'
-    ? [...NAV_ITEMS, { icon: LuShieldCheck, labelId: 'nav.admin', to: ROUTES.ADMIN }]
-    : NAV_ITEMS;
 
   const handleLogout = useCallback(() => {
     dispatch(logout());
@@ -71,7 +61,7 @@ export const AppLayout = () => {
       {/* Desktop sidebar */}
       <VStack
         as="nav"
-        aria-label="Primary"
+        aria-label="Admin"
         align="stretch"
         gap={1}
         w={collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH}
@@ -98,7 +88,7 @@ export const AppLayout = () => {
         ) : (
           <HStack justify="space-between" align="center" mb={6} px={3}>
             <Heading asChild size="lg" color="brand.800">
-              <Link to={ROUTES.FEED}>
+              <Link to={ROUTES.ADMIN}>
                 <FormattedMessage id="app.name" />
               </Link>
             </Heading>
@@ -113,13 +103,12 @@ export const AppLayout = () => {
           </HStack>
         )}
 
-        {navItems.map(item => (
+        {NAV_ITEMS.map(item => (
           <SidebarNavLink
             key={item.to}
             item={item}
             active={isNavItemActive(location.pathname, item.to)}
             collapsed={collapsed}
-            count={item.to === ROUTES.ACTIVITY ? unreadCount : 0}
           />
         ))}
 
@@ -129,6 +118,8 @@ export const AppLayout = () => {
           {!collapsed && <LanguageSwitcher />}
           <ColorModeToggle />
         </HStack>
+
+        <SidebarLink to={ROUTES.FEED} icon={LuArrowLeft} labelId="admin.nav.backToApp" collapsed={collapsed} />
 
         <HStack
           as="button"
@@ -173,7 +164,7 @@ export const AppLayout = () => {
         px={4}
       >
         <Heading asChild size="md" color="brand.800">
-          <Link to={ROUTES.FEED}>
+          <Link to={ROUTES.ADMIN}>
             <FormattedMessage id="app.name" />
           </Link>
         </Heading>
@@ -207,6 +198,7 @@ export const AppLayout = () => {
             <LanguageSwitcher />
             <ColorModeToggle />
           </HStack>
+          <SidebarLink to={ROUTES.FEED} icon={LuArrowLeft} labelId="admin.nav.backToApp" collapsed={false} />
           <HStack
             as="button"
             onClick={handleLogout}
@@ -231,7 +223,7 @@ export const AppLayout = () => {
         pb={{ base: MOBILE_NAV_HEIGHT, md: 0 }}
         transition="margin-left 0.2s"
       >
-        <Box maxW="620px" mx="auto" px={4} py={8}>
+        <Box maxW="1100px" mx="auto" px={4} py={8}>
           <Outlet />
         </Box>
       </Box>
@@ -249,12 +241,11 @@ export const AppLayout = () => {
         justify="space-around"
         zIndex="overlay"
       >
-        {navItems.map(item => (
+        {NAV_ITEMS.map(item => (
           <BottomNavLink
             key={item.to}
             item={item}
             active={isNavItemActive(location.pathname, item.to)}
-            count={item.to === ROUTES.ACTIVITY ? unreadCount : 0}
           />
         ))}
       </HStack>
@@ -262,7 +253,7 @@ export const AppLayout = () => {
   );
 };
 
-const SidebarNavLink = ({ item, active, collapsed, count }: { item: NavItem; active: boolean; collapsed: boolean; count: number }) => {
+const SidebarNavLink = ({ item, active, collapsed }: { item: NavItem; active: boolean; collapsed: boolean }) => {
   const { theme } = useTheme();
   const intl = useIntl();
   const isDark = theme === 'dark';
@@ -282,10 +273,7 @@ const SidebarNavLink = ({ item, active, collapsed, count }: { item: NavItem; act
       justify={collapsed ? 'center' : 'flex-start'}
     >
       <Link to={item.to} title={collapsed ? label : undefined} aria-label={collapsed ? label : undefined}>
-        <Box position="relative">
-          <Icon size={22} />
-          <NotificationBadge count={count} />
-        </Box>
+        <Icon size={22} />
         {!collapsed && (
           <Text fontWeight={active ? '600' : '500'}>
             {label}
@@ -296,45 +284,45 @@ const SidebarNavLink = ({ item, active, collapsed, count }: { item: NavItem; act
   );
 };
 
-const BottomNavLink = ({ item, active, count }: { item: NavItem; active: boolean; count: number }) => {
+const SidebarLink = ({ to, icon: Icon, labelId, collapsed }: { to: string; icon: IconType; labelId: string; collapsed: boolean }) => {
+  const { theme } = useTheme();
+  const intl = useIntl();
+  const isDark = theme === 'dark';
+  const label = intl.formatMessage({ id: labelId });
+
+  return (
+    <HStack
+      asChild
+      p={3}
+      borderRadius="lg"
+      color="gray.600"
+      _hover={{ bg: isDark ? 'gray.800' : 'gray.50', color: 'brand.800' }}
+      gap={3}
+      justify={collapsed ? 'center' : 'flex-start'}
+    >
+      <Link to={to} title={collapsed ? label : undefined} aria-label={collapsed ? label : undefined}>
+        <Icon size={20} />
+        {!collapsed && (
+          <Text fontWeight="500">
+            {label}
+          </Text>
+        )}
+      </Link>
+    </HStack>
+  );
+};
+
+const BottomNavLink = ({ item, active }: { item: NavItem; active: boolean }) => {
   const Icon = item.icon;
 
   return (
     <VStack asChild gap={1} flex="1" py={2} color={active ? 'brand.800' : 'gray.500'}>
       <Link to={item.to}>
-        <Box position="relative">
-          <Icon size={22} />
-          <NotificationBadge count={count} />
-        </Box>
+        <Icon size={22} />
         <Text fontSize="2xs" fontWeight={active ? '600' : '400'}>
           <FormattedMessage id={item.labelId} />
         </Text>
       </Link>
     </VStack>
-  );
-};
-
-const NotificationBadge = ({ count }: { count: number }) => {
-  if (count <= 0) return null;
-
-  return (
-    <Box
-      position="absolute"
-      top="-6px"
-      right="-8px"
-      minW="16px"
-      h="16px"
-      px="3px"
-      borderRadius="full"
-      bg="red.500"
-      color="white"
-      fontSize="9px"
-      fontWeight="700"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      {count > 99 ? '99+' : count}
-    </Box>
   );
 };

@@ -6,6 +6,7 @@ export type FileType = 'IMAGE' | 'VIDEO';
 export type UserRole = 'USER' | 'ADMIN';
 export type ActivityType = 'LIKE' | 'COMMENT';
 export type PostStatus = 'DRAFT' | 'PUBLISHED';
+export type AccountStatus = 'ACTIVE' | 'SUSPENDED';
 
 // Spring Data `Page<T>` shape.
 export interface Page<T> {
@@ -139,4 +140,33 @@ export interface UpdatePostRequest {
 export interface UpdateProfileRequest {
   bio?: string;
   avatar?: File;
+}
+
+export interface AdminUserDto {
+  id: number;
+  username: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  accountStatus: AccountStatus;
+  createdAt: string;
+}
+
+export interface UpdateUserRoleRequest {
+  role: UserRole;
+}
+
+export interface UpdateAccountStatusRequest {
+  accountStatus: AccountStatus;
+}
+
+export interface ResetPasswordResponseDto {
+  temporaryPassword: string;
+}
+
+export interface AdminStatsDto {
+  totalUsers: number;
+  totalAdmins: number;
+  suspendedUsers: number;
+  totalPosts: number;
 }
