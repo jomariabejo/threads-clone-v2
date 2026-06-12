@@ -1,24 +1,32 @@
 import { apiClient } from './client';
 import type {
   AccountStatus,
+  AdminPostListParams,
   AdminStatsDto,
   AdminUserDto,
-  Page,
+  AdminUserListParams,
+  PagedResponse,
   PostResponseDto,
   ResetPasswordResponseDto,
   UserRole,
 } from './types';
 
-const DEFAULT_PAGE_SIZE = 20;
+export const getAdminUsers = async (params: AdminUserListParams): Promise<PagedResponse<AdminUserDto>> => {
+  const searchParams = new URLSearchParams();
+  searchParams.set('page', String(params.page));
+  searchParams.set('size', String(params.size));
+  if (params.search) searchParams.set('search', params.search);
+  if (params.role) searchParams.set('role', params.role);
+  if (params.accountStatus) searchParams.set('accountStatus', params.accountStatus);
+  if (params.createdFrom) searchParams.set('createdFrom', params.createdFrom);
+  if (params.createdTo) searchParams.set('createdTo', params.createdTo);
+  if (params.updatedFrom) searchParams.set('updatedFrom', params.updatedFrom);
+  if (params.updatedTo) searchParams.set('updatedTo', params.updatedTo);
+  for (const { field, direction } of params.sort) {
+    searchParams.append('sort', `${field},${direction}`);
+  }
 
-export const getAdminUsers = async (
-  page: number,
-  search?: string,
-  size: number = DEFAULT_PAGE_SIZE
-): Promise<Page<AdminUserDto>> => {
-  const { data } = await apiClient.get<Page<AdminUserDto>>('/api/admin/users', {
-    params: { page, size, search },
-  });
+  const { data } = await apiClient.get<PagedResponse<AdminUserDto>>(`/api/admin/users?${searchParams.toString()}`);
   return data;
 };
 
@@ -37,14 +45,21 @@ export const resetUserPassword = async (userId: number): Promise<ResetPasswordRe
   return data;
 };
 
-export const getAdminPosts = async (
-  page: number,
-  search?: string,
-  size: number = DEFAULT_PAGE_SIZE
-): Promise<Page<PostResponseDto>> => {
-  const { data } = await apiClient.get<Page<PostResponseDto>>('/api/admin/posts', {
-    params: { page, size, search },
-  });
+export const getAdminPosts = async (params: AdminPostListParams): Promise<PagedResponse<PostResponseDto>> => {
+  const searchParams = new URLSearchParams();
+  searchParams.set('page', String(params.page));
+  searchParams.set('size', String(params.size));
+  if (params.search) searchParams.set('search', params.search);
+  if (params.authorId !== undefined) searchParams.set('authorId', String(params.authorId));
+  if (params.visibility) searchParams.set('visibility', params.visibility);
+  if (params.status) searchParams.set('status', params.status);
+  if (params.createdFrom) searchParams.set('createdFrom', params.createdFrom);
+  if (params.createdTo) searchParams.set('createdTo', params.createdTo);
+  for (const { field, direction } of params.sort) {
+    searchParams.append('sort', `${field},${direction}`);
+  }
+
+  const { data } = await apiClient.get<PagedResponse<PostResponseDto>>(`/api/admin/posts?${searchParams.toString()}`);
   return data;
 };
 

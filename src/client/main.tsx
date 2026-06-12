@@ -4,6 +4,7 @@ import { Provider as DataProvider } from 'react-redux';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { setGlobalTheme } from '@atlaskit/tokens';
 import { ColorModeProvider } from './ui/components/color-mode';
 import App from './App';
 import { store } from './redux/store';
@@ -20,6 +21,8 @@ import './ui/styles/index.css';
 
 const STALE_TIME_MS = 2 * 60 * 1000;
 const GC_TIME_MS = 10 * 60 * 1000;
+
+void setGlobalTheme({ colorMode: 'light', light: 'light', dark: 'light', spacing: 'spacing', typography: 'typography', shape: 'shape' });
 
 const queryClient = new QueryClient({
   defaultOptions: {

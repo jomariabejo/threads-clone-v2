@@ -26,6 +26,18 @@
     "test:e2e:open": "playwright test --ui"
   },
   "dependencies": {
+    "@atlaskit/button": "^23.11.8",
+    "@atlaskit/datetime-picker": "^17.9.4",
+    "@atlaskit/dynamic-table": "^18.4.2",
+    "@atlaskit/empty-state": "^10.2.0",
+    "@atlaskit/icon": "^35.4.0",
+    "@atlaskit/inline-message": "^15.6.14",
+    "@atlaskit/lozenge": "^13.8.4",
+    "@atlaskit/pagination": "^16.3.1",
+    "@atlaskit/select": "^21.12.13",
+    "@atlaskit/spinner": "^19.1.2",
+    "@atlaskit/textfield": "^8.3.2",
+    "@atlaskit/tokens": "^13.3.1",
     "@chakra-ui/react": "^3.35.0",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",

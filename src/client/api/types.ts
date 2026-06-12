@@ -149,7 +149,59 @@ export interface AdminUserDto {
   email: string;
   role: UserRole;
   accountStatus: AccountStatus;
+  profileImagePath: string | null;
   createdAt: string;
+  updatedAt: string;
+}
+
+// Custom paginated response shape returned by /api/admin/users.
+export interface PagedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+}
+
+export type AdminUserSortField = 'id' | 'name' | 'username' | 'email' | 'userRole' | 'accountStatus' | 'createdAt' | 'updatedAt';
+
+export type SortDirection = 'asc' | 'desc';
+
+export interface AdminUserSort {
+  field: AdminUserSortField;
+  direction: SortDirection;
+}
+
+export interface AdminUserListParams {
+  page: number;
+  size: number;
+  search?: string;
+  role?: UserRole;
+  accountStatus?: AccountStatus;
+  createdFrom?: string;
+  createdTo?: string;
+  updatedFrom?: string;
+  updatedTo?: string;
+  sort: AdminUserSort[];
+}
+
+export type AdminPostSortField = 'id' | 'title' | 'visibility' | 'status' | 'createdAt';
+
+export interface AdminPostSort {
+  field: AdminPostSortField;
+  direction: SortDirection;
+}
+
+export interface AdminPostListParams {
+  page: number;
+  size: number;
+  search?: string;
+  authorId?: number;
+  visibility?: Visibility;
+  status?: PostStatus;
+  createdFrom?: string;
+  createdTo?: string;
+  sort: AdminPostSort[];
 }
 
 export interface UpdateUserRoleRequest {
