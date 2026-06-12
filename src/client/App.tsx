@@ -10,10 +10,15 @@ import { ScrollToTop } from './ui/components/scroll-to-top';
 import { ProtectedRoute } from './ui/components/protected-route';
 import { AdminRoute } from './ui/components/admin-route';
 import { ROUTES } from './utilities/constants';
-import { Routes, Route, BrowserRouter, Navigate } from 'react-router';
+import { Routes, Route, BrowserRouter } from 'react-router';
 
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const PublicLayout = lazy(() => import('./ui/layout/public-layout').then(m => ({ default: m.PublicLayout })));
+const Home = lazy(() => import('./pages/Home'));
+const About = lazy(() => import('./pages/About'));
+const NewsEvents = lazy(() => import('./pages/NewsEvents'));
+const Faq = lazy(() => import('./pages/Faq'));
 const AppLayout = lazy(() => import('./ui/layout/app-layout').then(m => ({ default: m.AppLayout })));
 const AdminLayout = lazy(() => import('./ui/layout/admin-layout').then(m => ({ default: m.AdminLayout })));
 const Feed = lazy(() => import('./pages/Feed'));
@@ -29,11 +34,6 @@ const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminPosts = lazy(() => import('./pages/AdminPosts'));
 const AdminReports = lazy(() => import('./pages/AdminReports'));
 const NotFound = lazy(() => import('./pages/NotFound'));
-
-const HomeRedirect = () => {
-  const token = useSelector((state: RootState) => state.auth.token);
-  return <Navigate to={token ? ROUTES.FEED : ROUTES.LOGIN} replace />;
-};
 
 const App = () => {
   const { loading, error } = useSelector((state: RootState) => state.preferences);
@@ -53,7 +53,12 @@ const App = () => {
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
-          <Route path={ROUTES.HOME} element={<HomeRedirect />} />
+          <Route element={<PublicLayout />}>
+            <Route path={ROUTES.HOME} element={<Home />} />
+            <Route path={ROUTES.ABOUT} element={<About />} />
+            <Route path={ROUTES.NEWS_EVENTS} element={<NewsEvents />} />
+            <Route path={ROUTES.FAQ} element={<Faq />} />
+          </Route>
           <Route path={ROUTES.LOGIN} element={<Login />} />
           <Route path={ROUTES.REGISTER} element={<Register />} />
           <Route element={<ProtectedRoute />}>

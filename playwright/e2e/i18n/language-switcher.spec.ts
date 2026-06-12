@@ -10,13 +10,13 @@ test.describe('Language switcher', () => {
     expect(englishHeading.length).toBeGreaterThan(0);
 
     await select.selectOption('zh');
-    await expect(page.locator('div[dir="ltr"]')).toBeVisible();
+    await expect(page.locator('div[dir="ltr"]').first()).toBeVisible();
     const chineseHeading = (await page.locator('main h1').first().textContent())?.trim() ?? '';
     expect(chineseHeading.length).toBeGreaterThan(0);
     expect(chineseHeading).not.toBe(englishHeading);
 
     await select.selectOption('fr');
-    await expect(page.locator('div[dir="ltr"]')).toBeVisible();
+    await expect(page.locator('div[dir="ltr"]').first()).toBeVisible();
     const frenchHeading = (await page.locator('main h1').first().textContent())?.trim() ?? '';
     expect(frenchHeading.length).toBeGreaterThan(0);
     expect(frenchHeading).not.toBe(englishHeading);

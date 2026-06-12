@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Box, HStack, Heading, IconButton, Text, VStack } from '@chakra-ui/react';
 import { useTheme } from 'next-themes';
-import { LuArrowLeft, LuChevronsLeft, LuChevronsRight, LuFileText, LuFlag, LuLayoutDashboard, LuLogOut, LuMenu, LuUsers, LuX } from 'react-icons/lu';
+import { LuArrowLeftRight, LuChevronsLeft, LuChevronsRight, LuFileText, LuFlag, LuLayoutDashboard, LuLogOut, LuMenu, LuUsers, LuX } from 'react-icons/lu';
 import type { IconType } from 'react-icons';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ROUTES } from '@/client/utilities/constants';
@@ -119,7 +119,9 @@ export const AdminLayout = () => {
           <ColorModeToggle />
         </HStack>
 
-        <SidebarLink to={ROUTES.FEED} icon={LuArrowLeft} labelId="admin.nav.backToApp" collapsed={collapsed} />
+        <SidebarLink to={ROUTES.FEED} icon={LuArrowLeftRight} labelId="admin.nav.switchToUserView" collapsed={collapsed} />
+
+        <Box borderTop="1px solid" borderColor={borderColor} mx={collapsed ? 0 : 3} my={1} />
 
         <HStack
           as="button"
@@ -127,7 +129,7 @@ export const AdminLayout = () => {
           p={3}
           borderRadius="lg"
           color="gray.600"
-          _hover={{ bg: isDark ? 'gray.800' : 'gray.50', color: 'brand.800' }}
+          _hover={{ bg: isDark ? 'red.900' : 'red.50', color: 'red.600' }}
           gap={3}
           justify={collapsed ? 'center' : 'flex-start'}
           textAlign="start"
@@ -198,13 +200,15 @@ export const AdminLayout = () => {
             <LanguageSwitcher />
             <ColorModeToggle />
           </HStack>
-          <SidebarLink to={ROUTES.FEED} icon={LuArrowLeft} labelId="admin.nav.backToApp" collapsed={false} />
+          <SidebarLink to={ROUTES.FEED} icon={LuArrowLeftRight} labelId="admin.nav.switchToUserView" collapsed={false} />
+          <Box borderTop="1px solid" borderColor={borderColor} mx={3} my={1} />
           <HStack
             as="button"
             onClick={handleLogout}
             p={3}
             borderRadius="lg"
             color="gray.600"
+            _hover={{ bg: isDark ? 'red.900' : 'red.50', color: 'red.600' }}
             gap={3}
             textAlign="start"
           >

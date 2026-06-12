@@ -25,10 +25,19 @@ interface DateFilterFieldProps {
 export const DateFilterField = ({ labelId, value, onChange, minDate, maxDate }: DateFilterFieldProps) => {
   const intl = useIntl();
   const label = intl.formatMessage({ id: labelId });
+  const placeholder = intl.formatMessage({ id: 'admin.shared.filters.anyDate' });
 
   return (
     <FilterField label={label}>
-      <DatePicker value={value} onChange={onChange} minDate={minDate} maxDate={maxDate} spacing="compact" label={label} />
+      <DatePicker
+        value={value}
+        onChange={onChange}
+        minDate={minDate}
+        maxDate={maxDate}
+        spacing="compact"
+        label={label}
+        placeholder={placeholder}
+      />
     </FilterField>
   );
 };

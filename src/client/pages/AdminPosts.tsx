@@ -3,11 +3,13 @@ import { Box, Center, Heading, Text, VStack } from '@chakra-ui/react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useAdminPosts } from '@/client/hooks/api/use-admin-posts';
 import { useAdminPostsUrlState } from '@/client/hooks/use-admin-posts-url-state';
+import { useAdminPostsBulkSelection } from '@/client/hooks/use-admin-posts-bulk-selection';
 import { useDeleteAdminPost } from '@/client/hooks/api/use-delete-admin-post';
 import { PageMeta } from '@/client/ui/components/page-meta';
 import { PostsToolbar } from '@/client/ui/components/admin-posts/posts-toolbar';
 import { PostsTable } from '@/client/ui/components/admin-posts/posts-table';
 import { PostsPagination } from '@/client/ui/components/admin-posts/posts-pagination';
+import { BulkActionBar } from '@/client/ui/components/admin-posts/bulk-action-bar';
 import { toaster } from '@/client/ui/components/toaster';
 import type { PostResponseDto } from '@/client/api/types';
 
@@ -28,8 +30,12 @@ const AdminPosts = () => {
 
   const deletePost = useDeleteAdminPost();
 
+  const urlStateKey = `${urlState.search}|${urlState.visibility}|${urlState.status}|${urlState.createdFrom}|${urlState.createdTo}|${JSON.stringify(urlState.sort)}|${urlState.page}|${urlState.size}`;
+  const pageIds = (data?.content ?? []).map(post => post.id);
+  const bulkSelection = useAdminPostsBulkSelection(pageIds, urlStateKey);
+
   const handleDelete = (post: PostResponseDto) => {
-    if (!window.confirm(intl.formatMessage({ id: 'admin.posts.deleteConfirm' }))) return;
+    if (!globalThis.confirm(intl.formatMessage({ id: 'admin.posts.deleteConfirm' }))) return;
 
     deletePost.mutate(post.id, {
       onError: error => {
@@ -64,6 +70,15 @@ const AdminPosts = () => {
 
         {!isError && (
           <>
+            <BulkActionBar
+              selectedCount={bulkSelection.selectedIds.size}
+              onClear={bulkSelection.onClear}
+              onDelete={bulkSelection.onDelete}
+              onSetStatus={bulkSelection.onSetStatus}
+              isDeleting={bulkSelection.isDeleting}
+              isUpdatingStatus={bulkSelection.isUpdatingStatus}
+            />
+
             <Box overflowX="auto">
               <PostsTable
                 posts={data?.content ?? []}
@@ -71,6 +86,9 @@ const AdminPosts = () => {
                 sort={urlState.sort}
                 onToggleSort={urlState.toggleSort}
                 onDelete={handleDelete}
+                selectedIds={bulkSelection.selectedIds}
+                onToggleSelect={bulkSelection.onToggleSelect}
+                onToggleSelectAll={bulkSelection.onToggleSelectAll}
               />
             </Box>
 

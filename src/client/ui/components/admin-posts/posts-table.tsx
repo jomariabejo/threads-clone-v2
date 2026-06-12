@@ -2,7 +2,7 @@ import { DynamicTableStateless } from '@atlaskit/dynamic-table';
 import type { HeadType, RowType } from '@atlaskit/dynamic-table/types';
 import EmptyState from '@atlaskit/empty-state';
 import Lozenge from '@atlaskit/lozenge';
-import { Box, IconButton, Text, VStack } from '@chakra-ui/react';
+import { Box, Checkbox, IconButton, Text, Tooltip, VStack } from '@chakra-ui/react';
 import { LuArrowDown, LuArrowUp, LuArrowUpDown, LuTrash2 } from 'react-icons/lu';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getMediaUrl } from '@/client/api/client';
@@ -19,6 +19,9 @@ interface PostsTableProps {
   sort: AdminPostSort[];
   onToggleSort: (field: AdminPostSortField, multi: boolean) => void;
   onDelete: (post: PostResponseDto) => void;
+  selectedIds: Set<number>;
+  onToggleSelect: (postId: number) => void;
+  onToggleSelectAll: () => void;
 }
 
 const SortIndicator = ({ entry }: { entry?: AdminPostSort }) => {
@@ -82,8 +85,9 @@ const StatusLozenge = ({ status }: { status: PostResponseDto['status'] }) => {
 
 const ContentCell = ({ post }: { post: PostResponseDto }) => {
   const preview = extractPlainTextPreview(post.content);
+  const full = extractPlainTextPreview(post.content, Infinity);
 
-  return (
+  const body = (
     <VStack align="start" gap={0} maxW="320px">
       {post.title && <Text fontWeight="600" fontSize="sm">{post.title}</Text>}
       {preview && (
@@ -92,6 +96,23 @@ const ContentCell = ({ post }: { post: PostResponseDto }) => {
         </Text>
       )}
     </VStack>
+  );
+
+  if (full.length <= preview.length) return body;
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        {body}
+      </Tooltip.Trigger>
+      <Tooltip.Positioner>
+        <Tooltip.Content maxW="360px" whiteSpace="normal">
+          {post.title && <Text fontWeight="700" mb={1}>{post.title}</Text>}
+          <Text fontSize="sm">{full}</Text>
+          <Tooltip.Arrow />
+        </Tooltip.Content>
+      </Tooltip.Positioner>
+    </Tooltip.Root>
   );
 };
 
@@ -114,7 +135,7 @@ const DateCell = ({ value }: { value: string }) => {
   );
 };
 
-export const PostsTable = ({ posts, isLoading, sort, onToggleSort, onDelete }: PostsTableProps) => {
+export const PostsTable = ({ posts, isLoading, sort, onToggleSort, onDelete, selectedIds, onToggleSelect, onToggleSelectAll }: PostsTableProps) => {
   const intl = useIntl();
 
   const sortableHead = (field: AdminPostSortField, labelId: string, width: number) => ({
@@ -123,8 +144,28 @@ export const PostsTable = ({ posts, isLoading, sort, onToggleSort, onDelete }: P
     content: <SortableHeader field={field} labelId={labelId} sort={sort} onToggleSort={onToggleSort} />,
   });
 
+  const allSelected = posts.length > 0 && posts.every(post => selectedIds.has(post.id));
+  const someSelected = posts.some(post => selectedIds.has(post.id));
+  const headerChecked: boolean | 'indeterminate' = allSelected || (someSelected ? 'indeterminate' : false);
+
   const head: HeadType = {
     cells: [
+      {
+        key: 'select',
+        width: 4,
+        content: (
+          <Checkbox.Root
+            checked={headerChecked}
+            onCheckedChange={() => { onToggleSelectAll(); }}
+            aria-label={intl.formatMessage({ id: 'admin.posts.selectAll' })}
+          >
+            <Checkbox.HiddenInput />
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+          </Checkbox.Root>
+        ),
+      },
       sortableHead('id', 'admin.posts.columnId', 5),
       sortableHead('title', 'admin.posts.columnContent', 32),
       { key: 'author', width: 14, content: <FormattedMessage id="admin.posts.columnAuthor" /> },
@@ -138,6 +179,21 @@ export const PostsTable = ({ posts, isLoading, sort, onToggleSort, onDelete }: P
   const rows: RowType[] = posts.map(post => ({
     key: String(post.id),
     cells: [
+      {
+        key: 'select',
+        content: (
+          <Checkbox.Root
+            checked={selectedIds.has(post.id)}
+            onCheckedChange={() => { onToggleSelect(post.id); }}
+            aria-label={intl.formatMessage({ id: 'admin.posts.selectRow' }, { id: post.id })}
+          >
+            <Checkbox.HiddenInput />
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+          </Checkbox.Root>
+        ),
+      },
       { key: 'id', content: post.id },
       { key: 'content', content: <ContentCell post={post} /> },
       { key: 'author', content: <AuthorCell post={post} /> },

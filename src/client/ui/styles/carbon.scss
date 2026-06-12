@@ -1,0 +1,113 @@
+// IBM Carbon styles for the public marketing site only.
+// Imported solely from the lazy-loaded public-layout chunk so it never
+// reaches the authenticated app (Chakra UI + Atlaskit) bundle.
+@use '@carbon/react/scss/config' with (
+  $css--font-face: false,
+  $css--reset: false,
+  $css--body: false,
+);
+@use '@carbon/react/scss/themes';
+@use '@carbon/react/scss/theme' with ($theme: themes.$white);
+@use '@carbon/react/scss/grid';
+@use '@carbon/react/scss/components/ui-shell';
+@use '@carbon/react/scss/components/button';
+@use '@carbon/react/scss/components/tile';
+@use '@carbon/react/scss/components/accordion';
+@use '@carbon/react/scss/components/link';
+@use '@carbon/react/scss/components/tag';
+@use '@carbon/react/scss/spacing' as *;
+
+// The <Theme> component only toggles `cds--white`/`cds--g100` classes on its
+// wrapper element - it doesn't emit the CSS custom properties for each theme.
+// Without this, every `var(--cds-*, <white-theme-default>)` falls back to its
+// hardcoded white-theme default and switching to `g100` has no visual effect.
+.cds--white {
+  @include theme.theme(themes.$white);
+}
+
+.cds--g100 {
+  @include theme.theme(themes.$g100);
+}
+
+// Apply the resolved theme colors to the themed root so the whole public
+// site (not just individual Carbon components) follows light/dark mode,
+// overriding the Chakra app's global body background underneath it.
+.cds--white,
+.cds--g100 {
+  background-color: var(--cds-background);
+  color: var(--cds-text-primary);
+  min-height: 100vh;
+}
+
+// Layout helpers for the public marketing pages, namespaced to avoid
+// clashing with Chakra/Atlaskit class names elsewhere in the app.
+.public-content {
+  min-height: calc(100vh - 3rem);
+}
+
+.public-hero {
+  padding: $spacing-10 $spacing-05;
+  text-align: center;
+}
+
+.public-hero__tagline {
+  max-width: 40rem;
+  margin: $spacing-04 auto 0;
+}
+
+.public-hero__actions {
+  display: flex;
+  gap: $spacing-04;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: $spacing-06;
+}
+
+.public-section {
+  padding: $spacing-09 $spacing-05;
+}
+
+.public-section--muted {
+  background: var(--cds-layer-01);
+}
+
+.public-section__heading {
+  margin-bottom: $spacing-06;
+}
+
+.public-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: $spacing-05;
+}
+
+.public-tiles .cds--tile {
+  height: 100%;
+}
+
+.public-footer {
+  padding: $spacing-07 $spacing-05;
+  border-top: 1px solid var(--cds-border-subtle);
+}
+
+.public-footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.public-footer__meta {
+  margin-top: $spacing-06;
+  color: var(--cds-text-secondary);
+}
+
+.public-stack {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+}
+
+.public-news-item__date {
+  color: var(--cds-text-secondary);
+  margin-bottom: $spacing-02;
+}

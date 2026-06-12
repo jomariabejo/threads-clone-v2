@@ -20,6 +20,9 @@ export const META = {
 
 export const ROUTES = {
   HOME: '/',
+  ABOUT: '/about',
+  NEWS_EVENTS: '/news-events',
+  FAQ: '/faq',
   LOGIN: '/login',
   REGISTER: '/register',
   FEED: '/feed',

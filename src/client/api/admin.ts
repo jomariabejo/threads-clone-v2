@@ -7,6 +7,7 @@ import type {
   AdminUserListParams,
   PagedResponse,
   PostResponseDto,
+  PostStatus,
   ResetPasswordResponseDto,
   UserRole,
 } from './types';
@@ -65,6 +66,15 @@ export const getAdminPosts = async (params: AdminPostListParams): Promise<PagedR
 
 export const deleteAdminPost = async (postId: number): Promise<void> => {
   await apiClient.delete(`/api/admin/posts/${postId}`);
+};
+
+export const deleteAdminPostsBulk = async (ids: number[]): Promise<void> => {
+  await apiClient.delete('/api/admin/posts/bulk', { data: { ids } });
+};
+
+export const updateAdminPostsStatusBulk = async (ids: number[], status: PostStatus): Promise<PostResponseDto[]> => {
+  const { data } = await apiClient.patch<PostResponseDto[]>('/api/admin/posts/bulk/status', { ids, status });
+  return data;
 };
 
 export const getAdminStats = async (): Promise<AdminStatsDto> => {
