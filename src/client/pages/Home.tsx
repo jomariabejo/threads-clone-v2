@@ -1,12 +1,18 @@
 import { useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Button, Column, Grid, Tile } from '@carbon/react';
+import { AspectRatio, Button, ClickableTile, Column, Grid } from '@carbon/react';
+import { DocumentAdd, Locked, UserMultiple } from '@carbon/icons-react';
 import type { RootState } from '@/client/redux/store';
 import { ROUTES } from '@/client/utilities/constants';
 import { PageMeta } from '@/client/ui/components/page-meta';
 
 const FEATURE_KEYS = ['posts', 'privacy', 'community'] as const;
+const FEATURE_ICONS = {
+  posts: DocumentAdd,
+  privacy: Locked,
+  community: UserMultiple,
+} as const;
 const EXPLORE_LINKS = [
   { to: ROUTES.ABOUT, labelId: 'publicNav.about' },
   { to: ROUTES.NEWS_EVENTS, labelId: 'publicNav.newsEvents' },
@@ -25,7 +31,7 @@ const Home = () => {
       />
 
       <Grid className="public-hero" fullWidth>
-        <Column lg={{ span: 8, offset: 4 }} md={8} sm={4}>
+        <Column className="public-hero__text" lg={8} md={8} sm={4}>
           <h1>
             <FormattedMessage id="home.hero.title" />
           </h1>
@@ -49,6 +55,11 @@ const Home = () => {
             )}
           </div>
         </Column>
+        <Column lg={8} md={8} sm={4}>
+          <AspectRatio ratio="4x3" className="public-hero__media">
+            <img src="/brand/home-hero.svg" alt={intl.formatMessage({ id: 'home.hero.imageAlt' })} />
+          </AspectRatio>
+        </Column>
       </Grid>
 
       <Grid className="public-section" fullWidth>
@@ -57,16 +68,20 @@ const Home = () => {
             <FormattedMessage id="home.features.title" />
           </h2>
           <div className="public-tiles">
-            {FEATURE_KEYS.map(key => (
-              <Tile key={key}>
-                <h3>
-                  <FormattedMessage id={`home.features.${key}.title`} />
-                </h3>
-                <p>
-                  <FormattedMessage id={`home.features.${key}.description`} />
-                </p>
-              </Tile>
-            ))}
+            {FEATURE_KEYS.map(key => {
+              const Icon = FEATURE_ICONS[key];
+              return (
+                <ClickableTile key={key} href={ROUTES.ABOUT}>
+                  <Icon size={32} className="public-tile__icon" />
+                  <h3>
+                    <FormattedMessage id={`home.features.${key}.title`} />
+                  </h3>
+                  <p>
+                    <FormattedMessage id={`home.features.${key}.description`} />
+                  </p>
+                </ClickableTile>
+              );
+            })}
           </div>
         </Column>
       </Grid>

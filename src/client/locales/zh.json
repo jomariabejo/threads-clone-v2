@@ -1,5 +1,6 @@
 {
   "app.name": "2026 模板",
+  "home.hero.imageAlt": "人们在社区动态中分享帖子并互动交流的插图",
   "home.title": "构建现代 Web 应用",
   "home.subtitle": "一个文档优先的全栈 TypeScript 模板，提供架构指南、经过验证的工作流和可直接用于生产的默认配置。",
   "home.getStarted": "开始使用",

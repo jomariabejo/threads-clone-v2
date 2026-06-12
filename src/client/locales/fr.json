@@ -1,5 +1,6 @@
 {
   "app.name": "Modèle 2026",
+  "home.hero.imageAlt": "Illustration de personnes partageant des publications et échangeant dans un fil communautaire",
   "home.title": "Créez des applications web modernes",
   "home.subtitle": "Un boilerplate TypeScript full-stack documenté avec des guides d'architecture, des workflows testés et des choix prêts pour la production.",
   "home.getStarted": "Commencer",
